@@ -6,6 +6,8 @@ import java.io.InputStream
 import java.io.Serializable
 import java.lang.IllegalArgumentException
 import java.security.MessageDigest
+import java.util.*
+import kotlin.NoSuchElementException
 import kotlin.math.ln
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -36,17 +38,18 @@ class FastCDC (
    * length - length of the chunk in bytes.
    * hash - chunk hash.
    */
-  class Chunk(val hash : ByteArray, val offset : Int, val length : Int) : Serializable{
+  class Chunk(val hash : String, val offset : Int, val length : Int) : Serializable{
     companion object {
       private const val serialVersionUID: Long = 1234567
     }
+
     override fun equals(other: Any?): Boolean {
       if (this === other) return true
       if (javaClass != other?.javaClass) return false
 
       other as Chunk
 
-      if (!hash.contentEquals(other.hash)) return false
+      if (hash != other.hash) return false
       if (offset != other.offset) return false
       if (length != other.length) return false
 
@@ -54,11 +57,12 @@ class FastCDC (
     }
 
     override fun hashCode(): Int {
-      var result = hash.contentHashCode()
+      var result = hash.hashCode()
       result = 31 * result + offset
       result = 31 * result + length
       return result
     }
+
   }
 
 
@@ -104,8 +108,8 @@ class FastCDC (
     return Chunk(getChunkHash(data, algorithm), sourceOffset, chunkLength)
   }
 
-  private fun getChunkHash(source : ByteArray, algorithm : String) : ByteArray{
-    return MessageDigest.getInstance(algorithm).digest(source)
+  private fun getChunkHash(source : ByteArray, algorithm : String) : String{
+    return Base64.getEncoder().encodeToString(MessageDigest.getInstance(algorithm).digest(source))
   }
 
   override fun hasNext() = cur != -1

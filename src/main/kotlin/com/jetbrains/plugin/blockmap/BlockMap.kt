@@ -28,10 +28,15 @@ class BlockMap : Serializable{
    * Compare this and another blockmaps and return all chunks contained in another but not contained in this.
    */
   fun compare(another: BlockMap) : ArrayList<FastCDC.Chunk>{
-    val oldSet = another.chunks.toHashSet()
-    val result =  ArrayList<FastCDC.Chunk>()
-    for(newChunk in this.chunks){
-      if(!oldSet.contains(newChunk)){
+    val oldHashMap = HashMap<String, FastCDC.Chunk>()
+    for(chunk in this.chunks){
+      if(!oldHashMap.contains(chunk.hash)){
+        oldHashMap[chunk.hash] = chunk
+      }
+    }
+    val result = ArrayList<FastCDC.Chunk>()
+    for(newChunk in another.chunks){
+      if(!oldHashMap.contains(newChunk.hash)){
         result.add(newChunk)
       }
     }
