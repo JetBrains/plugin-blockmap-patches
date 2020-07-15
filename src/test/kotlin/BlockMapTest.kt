@@ -50,7 +50,7 @@ class BlockMapTest {
     assertEquals(result, 94726)
   }
 
-  private fun validateChunks(chunks: ArrayList<FastCDC.Chunk>, offsets: Array<Int>, lengths: Array<Int>) {
+  private fun validateChunks(chunks: List<FastCDC.Chunk>, offsets: Array<Int>, lengths: Array<Int>) {
     assertEquals(chunks.size, offsets.size)
     assertEquals(chunks.size, lengths.size)
     for (i in chunks.indices) {
