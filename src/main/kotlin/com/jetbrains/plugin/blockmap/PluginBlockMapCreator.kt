@@ -9,9 +9,10 @@ import software.amazon.awssdk.services.s3.S3Client
 import java.io.ByteArrayOutputStream
 import java.io.ObjectOutputStream
 
-class PluginBlockMapCreator (private val s3Client: S3Client){
+class PluginBlockMapCreator(private val s3Client: S3Client) {
   companion object {
     private val logger: Logger = LoggerFactory.getLogger(PluginBlockMapCreator::class.java)
+
     // TODO: Add blockmap file name to configure properties
     private const val blockMapFileName = "blockmap.bin"
   }
@@ -34,12 +35,12 @@ class PluginBlockMapCreator (private val s3Client: S3Client){
 
 
     val outBytes = ByteArrayOutputStream()
-    ObjectOutputStream(outBytes).use{
-      outObjects -> outObjects.writeObject(blockMap)
+    ObjectOutputStream(outBytes).use { outObjects ->
+      outObjects.writeObject(blockMap)
     }
 
     logger.info("Uploading blockmap file $blockMapFilePath")
-    s3Client.putObject({putObjectRequest ->
+    s3Client.putObject({ putObjectRequest ->
       putObjectRequest
         .bucket(request.bucketName)
         .key(blockMapFilePath)
@@ -51,7 +52,7 @@ class PluginBlockMapCreator (private val s3Client: S3Client){
   }
 
 
-  private fun getBlockMapFilePath(filePath : String, blockMapFileName : String) : String{
+  private fun getBlockMapFilePath(filePath: String, blockMapFileName: String): String {
     return filePath.replaceAfterLast("/", blockMapFileName, blockMapFileName)
   }
 
