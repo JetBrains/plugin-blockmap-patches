@@ -1,9 +1,6 @@
 package com.jetbrains.plugin.blockmap
 
 import java.io.*
-import java.util.stream.Collectors.toMap
-import kotlin.collections.ArrayList
-import kotlin.streams.toList
 
 /**
  * @param source the source for which the blockmap will be created.
@@ -23,8 +20,8 @@ class BlockMap(
    * Compare this and another blockmaps and return all chunks contained in another but not contained in this.
    */
   fun compare(another: BlockMap): List<FastCDC.Chunk> {
-    val oldHashMap = chunks.associate { it.hash to chunks }
-    return another.chunks.filter { chunk -> !oldHashMap.containsKey(chunk.hash) }.toList()
+    val oldSet = chunks.toSet()
+    return another.chunks.filter { chunk -> !oldSet.contains(chunk) }.toList()
   }
 
 }

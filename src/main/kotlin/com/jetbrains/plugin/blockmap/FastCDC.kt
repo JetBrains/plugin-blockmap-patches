@@ -1,6 +1,5 @@
 package com.jetbrains.plugin.blockmap
 
-import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.Serializable
@@ -27,7 +26,7 @@ class FastCDC(
   private val maskS: Int = mask(logarithm2(normalSize) + 1),
   private val maskL: Int = mask(logarithm2(normalSize) - 1)
 ) : Iterator<FastCDC.Chunk> {
-  private val input = BufferedInputStream(source)
+  private val input = source.buffered()
   private var cur = input.read()
   private var bytesProcessed = 0
 
@@ -37,8 +36,12 @@ class FastCDC(
    * offset - start position within the original content.
    * length - length of the chunk in bytes.
    * hash - chunk hash.
+   *
+   * Note: two chunks are equals each other if and only if
+   * their hashes and lengths are the same but their
+   * offsets may be different.
    */
-  class Chunk(val hash: String, val offset: Int, val length: Int) : Serializable {
+  data class Chunk(val hash: String, val offset: Int, val length: Int) : Serializable {
     companion object {
       private const val serialVersionUID: Long = 1234567
     }
@@ -50,7 +53,6 @@ class FastCDC(
       other as Chunk
 
       if (hash != other.hash) return false
-      if (offset != other.offset) return false
       if (length != other.length) return false
 
       return true
@@ -58,37 +60,38 @@ class FastCDC(
 
     override fun hashCode(): Int {
       var result = hash.hashCode()
-      result = 31 * result + offset
       result = 31 * result + length
       return result
     }
+
 
   }
 
 
   private fun cut(sourceOffset: Int): Chunk {
-    val buffer = ByteArrayOutputStream()
-    while (buffer.size() < minSize && cur != -1) {
-      buffer.write(cur)
-      cur = input.read()
+    ByteArrayOutputStream().use { buffer ->
+      while (buffer.size() < minSize && cur != -1) {
+        buffer.write(cur)
+        cur = input.read()
+      }
+      if (buffer.size() < minSize) {
+        return createChunk(buffer.toByteArray(), sourceOffset)
+      }
+
+      // Start by using the "harder" chunking judgement to find chunks
+      // that smaller than the desired normal size.
+      var chunk = findChunk(buffer, maskS, normalSize, sourceOffset)
+      if (chunk != null) return chunk
+
+      // Fall back to using the "easier" chunking judgement to find chunks
+      // that larger than the desired normal size.
+      chunk = findChunk(buffer, maskL, maxSize, sourceOffset)
+      if (chunk != null) return chunk
+
+      // If all else fails, return the whole chunk. This will happen with
+      // pathological data, such as all zeros.
+      return createChunk(buffer.toByteArray(), sourceOffset)
     }
-    if (buffer.size() < minSize) {
-      return createChunk(buffer.toByteArray(), sourceOffset, buffer.size())
-    }
-
-    // Start by using the "harder" chunking judgement to find chunks
-    // that smaller than the desired normal size.
-    var chunk = findChunk(buffer, maskS, maxSize, sourceOffset)
-    if (chunk != null) return chunk
-
-    // Fall back to using the "easier" chunking judgement to find chunks
-    // that larger than the desired normal size.
-    chunk = findChunk(buffer, maskL, maxSize, sourceOffset)
-    if (chunk != null) return chunk
-
-    // If all else fails, return the whole chunk. This will happen with
-    // pathological data, such as all zeros.
-    return createChunk(buffer.toByteArray(), sourceOffset, buffer.size())
   }
 
   private fun findChunk(buffer: ByteArrayOutputStream, mask: Int, length: Int, sourceOffset: Int): Chunk? {
@@ -97,15 +100,15 @@ class FastCDC(
       val index = cur and 0xff
       buffer.write(cur)
       hash = (hash shr 1) + TABLE[index]
-      if ((hash and mask) == 0) return createChunk(buffer.toByteArray(), sourceOffset, buffer.size())
       cur = input.read()
+      if ((hash and mask) == 0) return createChunk(buffer.toByteArray(), sourceOffset)
     }
-    if (cur == -1) return createChunk(buffer.toByteArray(), sourceOffset, buffer.size())
+    if (cur == -1) return createChunk(buffer.toByteArray(), sourceOffset)
     return null
   }
 
-  private fun createChunk(data: ByteArray, sourceOffset: Int, chunkLength: Int): Chunk {
-    return Chunk(getChunkHash(data, algorithm), sourceOffset, chunkLength)
+  private fun createChunk(data: ByteArray, sourceOffset: Int): Chunk {
+    return Chunk(getChunkHash(data, algorithm), sourceOffset, data.size)
   }
 
   private fun getChunkHash(source: ByteArray, algorithm: String): String {

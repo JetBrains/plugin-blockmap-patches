@@ -29,25 +29,26 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
 
     val blockMapFilePath = getBlockMapFilePath(updateFileKey, blockMapFileName)
     logger.info("Creating blockmap")
-    val blockMap = BlockMap(inputStream)
-    inputStream.close()
+
+    val blockMap = inputStream.use { BlockMap(inputStream) }
     logger.info("Blockmap created")
 
 
-    val outBytes = ByteArrayOutputStream()
-    ObjectOutputStream(outBytes).use { outObjects ->
-      outObjects.writeObject(blockMap)
+    ByteArrayOutputStream().use { outBytes ->
+      ObjectOutputStream(outBytes).use { outObjects ->
+        outObjects.writeObject(blockMap)
+      }
+
+      logger.info("Uploading blockmap file $blockMapFilePath")
+      s3Client.putObject({ putObjectRequest ->
+        putObjectRequest
+          .bucket(request.bucketName)
+          .key(blockMapFilePath)
+      }, RequestBody.fromBytes(outBytes.toByteArray()))
+
+      logger.info("Blockmap file $blockMapFilePath uploaded")
     }
 
-    logger.info("Uploading blockmap file $blockMapFilePath")
-    s3Client.putObject({ putObjectRequest ->
-      putObjectRequest
-        .bucket(request.bucketName)
-        .key(blockMapFilePath)
-    }, RequestBody.fromBytes(outBytes.toByteArray()))
-    outBytes.close()
-
-    logger.info("Blockmap file $blockMapFilePath uploaded")
     return PluginBlockMapDescriptorResponse(blockMapFilePath)
   }
 
