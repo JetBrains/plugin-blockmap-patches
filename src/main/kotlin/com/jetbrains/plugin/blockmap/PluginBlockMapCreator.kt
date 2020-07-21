@@ -1,5 +1,6 @@
 package com.jetbrains.plugin.blockmap
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jetbrains.plugin.blockmap.protocol.PluginBlockMapDescriptorRequest
 import com.jetbrains.plugin.blockmap.protocol.PluginBlockMapDescriptorResponse
 import org.slf4j.Logger
@@ -11,7 +12,7 @@ import software.amazon.awssdk.services.s3.S3Client
 class PluginBlockMapCreator(private val s3Client: S3Client) {
   companion object {
     private val logger: Logger = LoggerFactory.getLogger(PluginBlockMapCreator::class.java)
-
+    private val mapper = jacksonObjectMapper()
     // TODO: Add blockmap file name to configure properties
     private const val blockMapFileName = "blockmap.json"
   }
@@ -37,7 +38,7 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
       putObjectRequest
         .bucket(request.bucketName)
         .key(blockMapFilePath)
-    }, RequestBody.fromString(blockMap.toJson()))
+    }, RequestBody.fromString(mapper.writeValueAsString(blockMap)))
     logger.info("Blockmap file $blockMapFilePath uploaded")
 
     return PluginBlockMapDescriptorResponse(blockMapFilePath)
@@ -53,5 +54,3 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
   }
 
 }
-
-
