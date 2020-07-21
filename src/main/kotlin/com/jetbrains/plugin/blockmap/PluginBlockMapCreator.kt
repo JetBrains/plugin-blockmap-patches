@@ -6,15 +6,14 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
-import java.io.ByteArrayOutputStream
-import java.io.ObjectOutputStream
+
 
 class PluginBlockMapCreator(private val s3Client: S3Client) {
   companion object {
     private val logger: Logger = LoggerFactory.getLogger(PluginBlockMapCreator::class.java)
 
     // TODO: Add blockmap file name to configure properties
-    private const val blockMapFileName = "blockmap.bin"
+    private const val blockMapFileName = "blockmap.json"
   }
 
   fun createPluginBlockMap(request: PluginBlockMapDescriptorRequest): PluginBlockMapDescriptorResponse {
@@ -33,21 +32,13 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
     val blockMap = inputStream.use { BlockMap(inputStream) }
     logger.info("Blockmap created")
 
-
-    ByteArrayOutputStream().use { outBytes ->
-      ObjectOutputStream(outBytes).use { outObjects ->
-        outObjects.writeObject(blockMap)
-      }
-
-      logger.info("Uploading blockmap file $blockMapFilePath")
-      s3Client.putObject({ putObjectRequest ->
-        putObjectRequest
-          .bucket(request.bucketName)
-          .key(blockMapFilePath)
-      }, RequestBody.fromBytes(outBytes.toByteArray()))
-
-      logger.info("Blockmap file $blockMapFilePath uploaded")
-    }
+    logger.info("Uploading blockmap file $blockMapFilePath")
+    s3Client.putObject({ putObjectRequest ->
+      putObjectRequest
+        .bucket(request.bucketName)
+        .key(blockMapFilePath)
+    }, RequestBody.fromString(blockMap.toJson()))
+    logger.info("Blockmap file $blockMapFilePath uploaded")
 
     return PluginBlockMapDescriptorResponse(blockMapFilePath)
   }

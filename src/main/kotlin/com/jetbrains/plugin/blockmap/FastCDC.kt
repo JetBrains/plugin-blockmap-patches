@@ -2,7 +2,6 @@ package com.jetbrains.plugin.blockmap
 
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
-import java.io.Serializable
 import java.lang.IllegalArgumentException
 import java.security.MessageDigest
 import java.util.*
@@ -10,7 +9,7 @@ import kotlin.NoSuchElementException
 import kotlin.math.ln
 import kotlin.math.pow
 import kotlin.math.roundToInt
-
+import kotlinx.serialization.*
 
 /**
  * FastCDC - Fast Contend-Defined Chunking algorithm implementation.
@@ -30,7 +29,6 @@ class FastCDC(
   private var cur = input.read()
   private var bytesProcessed = 0
 
-
   /**
    * Represents a chunk, returned from the FastCDC iterator.
    * offset - start position within the original content.
@@ -41,11 +39,8 @@ class FastCDC(
    * their hashes and lengths are the same but their
    * offsets may be different.
    */
-  data class Chunk(val hash: String, val offset: Int, val length: Int) : Serializable {
-    companion object {
-      private const val serialVersionUID: Long = 1234567
-    }
-
+  @Serializable
+  data class Chunk(val hash: String, val offset: Int, val length: Int) {
     override fun equals(other: Any?): Boolean {
       if (this === other) return true
       if (javaClass != other?.javaClass) return false
@@ -63,10 +58,7 @@ class FastCDC(
       result = 31 * result + length
       return result
     }
-
-
   }
-
 
   private fun cut(sourceOffset: Int): Chunk {
     ByteArrayOutputStream().use { buffer ->
@@ -171,7 +163,6 @@ class FastCDC(
       1453549767, 591603172, 768512391, 854125182
     )
   }
-
 }
 
 fun logarithm2(value: Int): Int {
