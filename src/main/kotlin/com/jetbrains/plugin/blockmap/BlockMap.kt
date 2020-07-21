@@ -4,6 +4,8 @@ import java.io.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
+import java.security.DigestInputStream
+import java.security.MessageDigest
 import java.util.*
 
 
@@ -40,6 +42,18 @@ class BlockMap private constructor() {
     val json = Json(JsonConfiguration.Stable)
     return json.stringify(serializer(), this)
   }
+}
+
+fun makeFileHash(source: InputStream, algorithm: String = "SHA-256"): String {
+  val digest = MessageDigest.getInstance(algorithm)
+  source.buffered().use { input ->
+    DigestInputStream(input, digest).use { digestInputStream ->
+      val buffer = ByteArray(1024 * 8)
+      while (digestInputStream.read(buffer) != -1) {
+      }
+    }
+  }
+  return Base64.getEncoder().encodeToString(digest.digest())
 }
 
 

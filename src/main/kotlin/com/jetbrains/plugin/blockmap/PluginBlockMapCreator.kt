@@ -6,6 +6,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
+import java.io.InputStream
 
 
 class PluginBlockMapCreator(private val s3Client: S3Client) {
@@ -14,38 +15,53 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
 
     // TODO: Add blockmap file name to configure properties
     private const val blockMapFileName = "blockmap.json"
+    // TODO: Add plugin hash file name to configure properties
+    private const val pluginHashFileName = "hash.txt"
   }
 
   fun createPluginBlockMap(request: PluginBlockMapDescriptorRequest): PluginBlockMapDescriptorResponse {
     val updateFileKey = getKeyFromPath(request.bucketPrefix, request.key)
-    logger.info("Downloading file $updateFileKey from S3")
-    val inputStream = s3Client.getObject { getObjectRequest ->
-      getObjectRequest
-        .bucket(request.bucketName)
-        .key(updateFileKey)
-    }
-    logger.info("File $updateFileKey downloaded")
+    val bucketName = request.bucketName
 
-    val blockMapFilePath = getBlockMapFilePath(updateFileKey, blockMapFileName)
     logger.info("Creating blockmap")
-
-    val blockMap = inputStream.use { BlockMap(inputStream) }
+    val blockMap = getFileInputStream(bucketName, updateFileKey).use { input -> BlockMap(input) }
     logger.info("Blockmap created")
 
+    val blockMapFilePath = getNewFilePath(updateFileKey, blockMapFileName)
     logger.info("Uploading blockmap file $blockMapFilePath")
-    s3Client.putObject({ putObjectRequest ->
-      putObjectRequest
-        .bucket(request.bucketName)
-        .key(blockMapFilePath)
-    }, RequestBody.fromString(blockMap.toJson()))
+    putStringToBucket(bucketName, blockMapFilePath, blockMap.toJson())
     logger.info("Blockmap file $blockMapFilePath uploaded")
+
+    logger.info("Creating plugin hash")
+    val pluginHash = getFileInputStream(bucketName, updateFileKey).use { input -> makeFileHash(input) }
+    logger.info("Plugin hash created")
+
+    val pluginHashPath = getNewFilePath(updateFileKey, pluginHashFileName)
+    logger.info("Uploading plugin hash file $pluginHashPath")
+    putStringToBucket(bucketName, pluginHashPath, pluginHash)
+    logger.info("Plugin hash file $pluginHashPath uploaded")
 
     return PluginBlockMapDescriptorResponse(blockMapFilePath)
   }
 
+  private fun putStringToBucket(bucketName : String, filePath: String, data : String){
+    s3Client.putObject({ putObjectRequest ->
+      putObjectRequest
+        .bucket(bucketName)
+        .key(filePath)
+    }, RequestBody.fromString(data))
+  }
 
-  private fun getBlockMapFilePath(filePath: String, blockMapFileName: String): String {
-    return filePath.replaceAfterLast("/", blockMapFileName, blockMapFileName)
+  private fun getFileInputStream(bucketName : String, filePath: String) : InputStream{
+    return s3Client.getObject { getObjectRequest ->
+      getObjectRequest
+        .bucket(bucketName)
+        .key(filePath)
+    }
+  }
+
+  private fun getNewFilePath(oldFilePath: String, newFileName: String): String {
+    return oldFilePath.replaceAfterLast("/", newFileName, newFileName)
   }
 
   private fun getKeyFromPath(bucketPrefix: String, filePath: String): String {
