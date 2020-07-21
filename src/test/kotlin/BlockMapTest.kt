@@ -1,7 +1,9 @@
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jetbrains.plugin.blockmap.BlockMap
-import com.jetbrains.plugin.blockmap.FastCDC
+import com.jetbrains.plugin.blockmap.Chunk
 import org.junit.Test
-import java.io.*
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.test.assertEquals
 
@@ -13,6 +15,7 @@ class BlockMapTest {
   private val testFile2 = concatenateFiles(file1, file2, file3)
   private val blockMap1 = BlockMap(testFile1.inputStream())
   private val blockMap2 = BlockMap(testFile2.inputStream())
+  private val mapper = jacksonObjectMapper()
 
   @Test
   fun `check blockmap chunks`() {
@@ -25,7 +28,7 @@ class BlockMapTest {
   @Test
   fun `check blockmap serialization`() {
     val blockMap = generateTestBlockMap(seed = 12345)
-    val restoredBlockMap = BlockMap.fromJson(blockMap.toJson())
+    val restoredBlockMap = build(toJson(blockMap))
     assertEquals(restoredBlockMap.compare(blockMap).size, 0)
   }
 
@@ -37,8 +40,8 @@ class BlockMapTest {
 
   @Test
   fun `check blockmaps serialization and compare`() {
-    val restoredBlockMap1 = BlockMap.fromJson(blockMap1.toJson())
-    val restoredBlockMap2 = BlockMap.fromJson(blockMap2.toJson())
+    val restoredBlockMap1 = build(toJson(blockMap1))
+    val restoredBlockMap2 = build(toJson(blockMap2))
     val result = calcChunksLength(restoredBlockMap1.compare(restoredBlockMap2))
     assertEquals(result, 103542)
   }
@@ -61,7 +64,7 @@ class BlockMapTest {
     }
   }
 
-  private fun validateChunks(chunks: List<FastCDC.Chunk>, offsets: Array<Int>, lengths: Array<Int>) {
+  private fun validateChunks(chunks: List<Chunk>, offsets: Array<Int>, lengths: Array<Int>) {
     assertEquals(chunks.size, offsets.size)
     assertEquals(chunks.size, lengths.size)
     for (i in chunks.indices) {
@@ -91,7 +94,8 @@ class BlockMapTest {
     }
   }
 
-  private fun calcChunksLength(chunks: List<FastCDC.Chunk>): Int {
-    return chunks.stream().mapToInt { e -> e.length }.sum()
-  }
+  private fun calcChunksLength(chunks: List<Chunk>): Int = chunks.stream().mapToInt { e -> e.length }.sum()
+
+  private fun build(json: String): BlockMap = mapper.readValue(json, BlockMap::class.java)
+  private fun toJson(blockMap: BlockMap) = mapper.writeValueAsString(blockMap)
 }

@@ -6,11 +6,10 @@ repositories {
 
 plugins {
   kotlin("jvm")
-  kotlin("plugin.serialization") version "1.3.70"
 }
 
 tasks.withType<KotlinCompile> {
-  kotlinOptions{
+  kotlinOptions {
     jvmTarget = "1.8"
   }
 }
@@ -19,5 +18,6 @@ dependencies {
   api("software.amazon.awssdk:s3:2.10.78")
   testImplementation("junit:junit:4.12")
   testImplementation(project(":services:plugin-blockmap-patches"))
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${rootProject.properties["jacksonVersion"]}")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${rootProject.properties["jacksonVersion"]}")
 }

@@ -1,5 +1,6 @@
 package com.jetbrains.plugin.blockmap
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jetbrains.plugin.blockmap.protocol.PluginBlockMapDescriptorRequest
 import com.jetbrains.plugin.blockmap.protocol.PluginBlockMapDescriptorResponse
 import org.slf4j.Logger
@@ -12,9 +13,11 @@ import java.io.InputStream
 class PluginBlockMapCreator(private val s3Client: S3Client) {
   companion object {
     private val logger: Logger = LoggerFactory.getLogger(PluginBlockMapCreator::class.java)
+    private val mapper = jacksonObjectMapper()
 
     // TODO: Add blockmap file name to configure properties
     private const val blockMapFileName = "blockmap.json"
+
     // TODO: Add plugin hash file name to configure properties
     private const val pluginHashFileName = "hash.txt"
   }
@@ -29,7 +32,7 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
 
     val blockMapFilePath = getNewFilePath(updateFileKey, blockMapFileName)
     logger.info("Uploading blockmap file $blockMapFilePath")
-    putStringToBucket(bucketName, blockMapFilePath, blockMap.toJson())
+    putStringToBucket(bucketName, blockMapFilePath, mapper.writeValueAsString(blockMap))
     logger.info("Blockmap file $blockMapFilePath uploaded")
 
     logger.info("Creating plugin hash")
@@ -44,7 +47,7 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
     return PluginBlockMapDescriptorResponse(blockMapFilePath)
   }
 
-  private fun putStringToBucket(bucketName : String, filePath: String, data : String){
+  private fun putStringToBucket(bucketName: String, filePath: String, data: String) {
     s3Client.putObject({ putObjectRequest ->
       putObjectRequest
         .bucket(bucketName)
@@ -52,7 +55,7 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
     }, RequestBody.fromString(data))
   }
 
-  private fun getFileInputStream(bucketName : String, filePath: String) : InputStream{
+  private fun getFileInputStream(bucketName: String, filePath: String): InputStream {
     return s3Client.getObject { getObjectRequest ->
       getObjectRequest
         .bucket(bucketName)
@@ -69,5 +72,3 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
   }
 
 }
-
-
