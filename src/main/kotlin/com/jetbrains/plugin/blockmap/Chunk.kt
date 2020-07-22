@@ -1,5 +1,7 @@
 package com.jetbrains.plugin.blockmap
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 /**
  * Represents a chunk, returned from the FastCDC iterator.
  * offset - start position within the original content.
@@ -11,9 +13,9 @@ package com.jetbrains.plugin.blockmap
  * offsets may be different.
  */
 data class Chunk(
-  val hash: String,
-  val offset: Int,
-  val length: Int
+  @JsonProperty("hash") val hash: String,
+  @JsonProperty("offset") val offset: Int,
+  @JsonProperty("length") val length: Int
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

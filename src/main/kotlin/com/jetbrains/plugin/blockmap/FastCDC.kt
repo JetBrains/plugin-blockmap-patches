@@ -14,9 +14,9 @@ import kotlin.math.roundToInt
  * Original article "https://www.usenix.org/system/files/conference/atc16/atc16-paper-xia.pdf".
  * Additional optimizations and variations according to "https://github.com/ronomon/deduplication".
  */
-internal class FastCDC(
+class FastCDC(
   source: InputStream,
-  private val algorithm: String = "SHA-256",
+  private val algorithm: String,
   private val minSize: Int = 2 * 1024,
   private val maxSize: Int = 64 * 1024,
   private val normalSize: Int = 8 * 1024

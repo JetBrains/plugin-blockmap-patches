@@ -1,4 +1,4 @@
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.jetbrains.plugin.blockmap.BlockMap
 import com.jetbrains.plugin.blockmap.Chunk
 import org.junit.Test
@@ -15,7 +15,7 @@ class BlockMapTest {
   private val testFile2 = concatenateFiles(file1, file2, file3)
   private val blockMap1 = BlockMap(testFile1.inputStream())
   private val blockMap2 = BlockMap(testFile2.inputStream())
-  private val mapper = jacksonObjectMapper()
+  private val mapper = ObjectMapper()
 
   @Test
   fun `check blockmap chunks`() {
