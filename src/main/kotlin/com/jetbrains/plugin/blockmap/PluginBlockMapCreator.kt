@@ -15,11 +15,8 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
     private val logger: Logger = LoggerFactory.getLogger(PluginBlockMapCreator::class.java)
     private val mapper = jacksonObjectMapper()
 
-    // TODO: Add blockmap file name to configure properties
-    private const val blockMapFileName = "blockmap.json"
-
-    // TODO: Add plugin hash file name to configure properties
-    private const val pluginHashFileName = "hash.txt"
+    const val BLOCKMAP_FILENAME = "blockmap.json"
+    const val HASH_FILENAME = "hash.txt"
   }
 
   fun createPluginBlockMap(request: PluginBlockMapDescriptorRequest): PluginBlockMapDescriptorResponse {
@@ -30,7 +27,7 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
     val blockMap = getFileInputStream(bucketName, updateFileKey).use { input -> BlockMap(input) }
     logger.info("Blockmap created")
 
-    val blockMapFilePath = getNewFilePath(updateFileKey, blockMapFileName)
+    val blockMapFilePath = getNewFilePath(updateFileKey, BLOCKMAP_FILENAME)
     logger.info("Uploading blockmap file $blockMapFilePath")
     putStringToBucket(bucketName, blockMapFilePath, mapper.writeValueAsString(blockMap))
     logger.info("Blockmap file $blockMapFilePath uploaded")
@@ -39,7 +36,7 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
     val pluginHash = getFileInputStream(bucketName, updateFileKey).use { input -> makeFileHash(input) }
     logger.info("Plugin hash created")
 
-    val pluginHashPath = getNewFilePath(updateFileKey, pluginHashFileName)
+    val pluginHashPath = getNewFilePath(updateFileKey, HASH_FILENAME)
     logger.info("Uploading plugin hash file $pluginHashPath")
     putStringToBucket(bucketName, pluginHashPath, pluginHash)
     logger.info("Plugin hash file $pluginHashPath uploaded")

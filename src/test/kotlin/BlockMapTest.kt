@@ -29,12 +29,12 @@ class BlockMapTest {
   fun `check blockmap serialization`() {
     val blockMap = generateTestBlockMap(seed = 12345)
     val restoredBlockMap = build(toJson(blockMap))
-    assertEquals(restoredBlockMap.compare(blockMap).size, 0)
+    assertEquals(compare(blockMap, restoredBlockMap).size, 0)
   }
 
   @Test
   fun `check compare different blockmaps`() {
-    val result = calcChunksLength(blockMap1.compare(blockMap2))
+    val result = calcChunksLength(compare(blockMap1, blockMap2))
     assertEquals(result, 103542)
   }
 
@@ -42,7 +42,7 @@ class BlockMapTest {
   fun `check blockmaps serialization and compare`() {
     val restoredBlockMap1 = build(toJson(blockMap1))
     val restoredBlockMap2 = build(toJson(blockMap2))
-    val result = calcChunksLength(restoredBlockMap1.compare(restoredBlockMap2))
+    val result = calcChunksLength(compare(restoredBlockMap1, restoredBlockMap2))
     assertEquals(result, 103542)
   }
 
@@ -92,6 +92,11 @@ class BlockMapTest {
       for (i in 0 until size) output.write(random.nextInt())
       return output.toByteArray()
     }
+  }
+
+  fun compare(old: BlockMap, new: BlockMap): List<Chunk> {
+    val oldSet = old.chunks.toHashSet()
+    return new.chunks.filter { chunk -> !oldSet.contains(chunk) }.toList()
   }
 
   private fun calcChunksLength(chunks: List<Chunk>): Int = chunks.stream().mapToInt { e -> e.length }.sum()
