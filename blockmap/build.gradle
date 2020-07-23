@@ -3,7 +3,6 @@ plugins {
   id "com.jfrog.bintray"
 }
 
-
 group = 'org.jetbrains.intellij'
 def buildNumber = System.getenv('BUILD_NUMBER') ?: "SNAPSHOT"
 version = "2.0.$buildNumber"
@@ -20,7 +19,7 @@ artifacts {
 
 publishing {
   publications {
-    mavenJava(MavenPublication) {
+    blockmapMavenJava(MavenPublication) {
       from project(':services:plugin-blockmap-patches:blockmap').components.java
       artifact blockmapSourceJar {
         classifier "sources"
@@ -33,11 +32,11 @@ if (hasProperty("bintrayUser")) {
     user = bintrayUser
     key = bintrayApiKey
     publish = true
-    publications = ['mavenJava']
+    publications = ['blockmapMavenJava']
     pkg {
       userOrg = "jetbrains"
       repo = "intellij-plugin-service"
-      name = "plugin-blockmap-library"
+      name = "blockmap"
       version {
         name = project.version
       }
