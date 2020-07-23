@@ -36,8 +36,9 @@ if (hasProperty("bintrayUser")) {
     pkg {
       userOrg = "jetbrains"
       repo = "intellij-plugin-service"
-      name = "blockmap"
+      name = "blockmap-library"
       licenses = ['Apache-2.0']
+      vcsUrl = 'https://bintray.com/jetbrains/intellij-plugin-service/blockmap-library.git'
       version {
         name = project.version
       }
