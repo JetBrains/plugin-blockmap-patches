@@ -37,6 +37,7 @@ if (hasProperty("bintrayUser")) {
       userOrg = "jetbrains"
       repo = "intellij-plugin-service"
       name = "blockmap"
+      licenses = ['Apache-2.0']
       version {
         name = project.version
       }
