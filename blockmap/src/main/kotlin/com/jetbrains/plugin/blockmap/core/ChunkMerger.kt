@@ -1,15 +1,15 @@
-package com.jetbrains.plugin.blockmap
+package com.jetbrains.plugin.blockmap.core
 
 import java.io.*
 import java.lang.IllegalArgumentException
 
 
 open class ChunkMerger(
-  private val oldFile : File,
-  private val oldBlockMap : BlockMap = BlockMap(oldFile.inputStream()),
+  private val oldFile: File,
+  private val oldBlockMap: BlockMap = BlockMap(oldFile.inputStream()),
   private val newBlockMap: BlockMap,
-  private val bufferSize : Int = 64*1024
-){
+  private val bufferSize: Int = 64 * 1024
+) {
   private val buffer = ByteArray(bufferSize)
 
   /**
@@ -20,7 +20,7 @@ open class ChunkMerger(
    * same order as they are in the difference between new and old chunk sets
    */
   @Throws(IOException::class)
-  open fun merge(output : OutputStream, newChunkDataSource : Iterator<ByteArray>) {
+  open fun merge(output: OutputStream, newChunkDataSource: Iterator<ByteArray>) {
     RandomAccessFile(oldFile, "r").use { oldFileRAF ->
       output.buffered().use { bufferedOutput ->
         val oldMap = oldBlockMap.chunks.associateBy { it.hash }
@@ -34,27 +34,31 @@ open class ChunkMerger(
   }
 
   @Throws(IOException::class)
-  open fun downloadChunkFromOldData(oldChunk : Chunk, oldFileRAF : RandomAccessFile,
-                                    output : OutputStream){
+  open fun downloadChunkFromOldData(
+    oldChunk: Chunk, oldFileRAF: RandomAccessFile,
+    output: OutputStream
+  ) {
     oldFileRAF.seek(oldChunk.offset.toLong())
     var remainingBytes = oldChunk.length
-    while (remainingBytes != 0){
-      val length = if(remainingBytes >= bufferSize) bufferSize else remainingBytes
+    while (remainingBytes != 0) {
+      val length = if (remainingBytes >= bufferSize) bufferSize else remainingBytes
       oldFileRAF.read(buffer, 0, length)
       output.write(buffer, 0, length)
-      remainingBytes-=length
+      remainingBytes -= length
     }
   }
 
   @Throws(IOException::class)
-  open fun downloadChunkFromNewData(newChunk : Chunk, newChunkDataSource :Iterator<ByteArray>,
-                                    output : OutputStream){
-    if(newChunkDataSource.hasNext()){
+  open fun downloadChunkFromNewData(
+    newChunk: Chunk, newChunkDataSource: Iterator<ByteArray>,
+    output: OutputStream
+  ) {
+    if (newChunkDataSource.hasNext()) {
       val chunkData = newChunkDataSource.next()
-      if(chunkData.size == newChunk.length){
+      if (chunkData.size == newChunk.length) {
         output.write(chunkData)
-      }else throw IllegalArgumentException("Received chunk length has wrong length: " +
+      } else throw IllegalArgumentException("Received chunk length has wrong length: " +
         "${chunkData.size} but need ${newChunk.length}")
-    }else throw IllegalArgumentException("New chunks data iterator hasn't got enough chunks")
+    } else throw IllegalArgumentException("New chunks data iterator hasn't got enough chunks")
   }
 }

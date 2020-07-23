@@ -1,4 +1,4 @@
-package com.jetbrains.plugin.blockmap
+package com.jetbrains.plugin.blockmap.core
 
 import java.io.ByteArrayOutputStream
 import java.io.InputStream

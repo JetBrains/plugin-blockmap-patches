@@ -1,6 +1,8 @@
 package com.jetbrains.plugin.blockmap
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.jetbrains.plugin.blockmap.core.BlockMap
+import com.jetbrains.plugin.blockmap.core.makeFileHash
 import com.jetbrains.plugin.blockmap.protocol.PluginBlockMapDescriptorRequest
 import com.jetbrains.plugin.blockmap.protocol.PluginBlockMapDescriptorResponse
 import org.slf4j.Logger
@@ -13,7 +15,7 @@ import java.io.InputStream
 class PluginBlockMapCreator(private val s3Client: S3Client) {
   companion object {
     private val logger: Logger = LoggerFactory.getLogger(PluginBlockMapCreator::class.java)
-    private val mapper = jacksonObjectMapper()
+    private val mapper = ObjectMapper()
 
     const val BLOCKMAP_FILENAME = "blockmap.json"
     const val HASH_FILENAME = "hash.txt"

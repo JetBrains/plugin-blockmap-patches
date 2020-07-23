@@ -1,6 +1,5 @@
-package com.jetbrains.plugin.blockmap
+package com.jetbrains.plugin.blockmap.core
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import java.io.*
 import java.security.DigestInputStream
 import java.security.MessageDigest
@@ -10,8 +9,8 @@ import java.util.*
 private const val ALGORITHM = "SHA-256"
 
 data class BlockMap(
-  @JsonProperty("chunks") val chunks: List<Chunk> = listOf(),
-  @JsonProperty("algorithm") val algorithm: String = ALGORITHM
+  val chunks: List<Chunk> = listOf(),
+  val algorithm: String = ALGORITHM
 ) {
   /**
    * @param source the source for which the blockmap will be created.
