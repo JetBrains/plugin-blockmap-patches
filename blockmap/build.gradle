@@ -38,7 +38,7 @@ if (hasProperty("bintrayUser")) {
       repo = "intellij-plugin-service"
       name = "blockmap-library"
       licenses = ['Apache-2.0']
-      vcsUrl = 'https://bintray.com/jetbrains/intellij-plugin-service/blockmap-library.git'
+      vcsUrl = 'git'
       version {
         name = project.version
       }

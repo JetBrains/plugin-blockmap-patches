@@ -30,7 +30,6 @@ class PluginBlockMapRequestHandler : RequestStreamHandler {
 
   override fun handleRequest(inputStream: InputStream, outputStream: OutputStream, context: Context) {
     val request = objectMapper.readValue(inputStream, PluginBlockMapDescriptorRequest::class.java)
-    val response = pluginBlockMapCreator.createPluginBlockMap(request)
-    objectMapper.writeValue(outputStream, response)
+    pluginBlockMapCreator.createPluginBlockMap(request)
   }
 }

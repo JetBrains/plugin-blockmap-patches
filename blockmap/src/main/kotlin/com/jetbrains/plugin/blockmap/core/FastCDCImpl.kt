@@ -10,11 +10,11 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 /**
- * FastCDC - Fast Contend-Defined Chunking algorithm implementation.
+ * FastCDCImpl - Fast Contend-Defined Chunking algorithm implementation.
  * Original article "https://www.usenix.org/system/files/conference/atc16/atc16-paper-xia.pdf".
  * Additional optimizations and variations according to "https://github.com/ronomon/deduplication".
  */
-class FastCDC(
+class FastCDCImpl(
   source: InputStream,
   private val algorithm: String,
   private val minSize: Int = 2 * 1024,

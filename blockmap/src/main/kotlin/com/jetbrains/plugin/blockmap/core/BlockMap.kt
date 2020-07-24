@@ -1,12 +1,8 @@
 package com.jetbrains.plugin.blockmap.core
 
 import java.io.*
-import java.security.DigestInputStream
-import java.security.MessageDigest
-import java.util.*
 
-
-private const val ALGORITHM = "SHA-256"
+internal const val ALGORITHM = "SHA-256"
 
 data class BlockMap(
   val chunks: List<Chunk> = listOf(),
@@ -18,29 +14,5 @@ data class BlockMap(
    *
    */
   constructor(source: InputStream, algorithm: String = ALGORITHM) :
-    this(FastCDC(source, algorithm).asSequence().toList(), algorithm)
+    this(FastCDCImpl(source, algorithm).asSequence().toList(), algorithm)
 }
-
-fun makeFileHash(source: InputStream, algorithm: String = ALGORITHM): String {
-  val digest = MessageDigest.getInstance(algorithm)
-  source.buffered().use { input ->
-    DigestInputStream(input, digest).use { digestInputStream ->
-      val buffer = ByteArray(1024 * 8)
-      while (digestInputStream.read(buffer) != -1) {
-      }
-    }
-  }
-  return Base64.getEncoder().encodeToString(digest.digest())
-}
-
-
-
-
-
-
-
-
-
-
-
-

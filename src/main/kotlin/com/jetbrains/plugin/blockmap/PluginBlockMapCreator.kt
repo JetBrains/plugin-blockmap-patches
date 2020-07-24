@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.jetbrains.plugin.blockmap.core.BlockMap
 import com.jetbrains.plugin.blockmap.core.makeFileHash
 import com.jetbrains.plugin.blockmap.protocol.PluginBlockMapDescriptorRequest
-import com.jetbrains.plugin.blockmap.protocol.PluginBlockMapDescriptorResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.core.sync.RequestBody
@@ -21,7 +20,7 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
     const val HASH_FILENAME = "hash.txt"
   }
 
-  fun createPluginBlockMap(request: PluginBlockMapDescriptorRequest): PluginBlockMapDescriptorResponse {
+  fun createPluginBlockMap(request: PluginBlockMapDescriptorRequest) {
     val updateFileKey = getKeyFromPath(request.bucketPrefix, request.key)
     val bucketName = request.bucketName
 
@@ -42,8 +41,6 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
     logger.info("Uploading plugin hash file $pluginHashPath")
     putStringToBucket(bucketName, pluginHashPath, pluginHash)
     logger.info("Plugin hash file $pluginHashPath uploaded")
-
-    return PluginBlockMapDescriptorResponse(blockMapFilePath)
   }
 
   private fun putStringToBucket(bucketName: String, filePath: String, data: String) {
@@ -69,5 +66,4 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
   private fun getKeyFromPath(bucketPrefix: String, filePath: String): String {
     return if (bucketPrefix.isEmpty()) filePath else "$bucketPrefix/${filePath.removePrefix("/")}"
   }
-
 }

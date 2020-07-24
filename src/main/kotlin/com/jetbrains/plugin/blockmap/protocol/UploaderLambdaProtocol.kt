@@ -6,8 +6,4 @@ class PluginBlockMapDescriptorRequest {
   lateinit var key: String
 }
 
-class PluginBlockMapDescriptorResponse(
-  val blockMapFilename: String
-)
-
 

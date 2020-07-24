@@ -15,9 +15,9 @@ open class ChunkMerger(
   /**
    * Restore new file from old file chunks and new file chunks by
    * merge old and new chunks.
-   * @param output stream where restored file will be written
+   * @param output stream where restored file will be written.
    * @param newChunkDataSource source of new chunks where chunks go in the
-   * same order as they are in the difference between new and old chunk sets
+   * same order as they are in the difference between new and old chunk sets.
    */
   @Throws(IOException::class)
   open fun merge(output: OutputStream, newChunkDataSource: Iterator<ByteArray>) {
@@ -35,8 +35,7 @@ open class ChunkMerger(
 
   @Throws(IOException::class)
   open fun downloadChunkFromOldData(
-    oldChunk: Chunk, oldFileRAF: RandomAccessFile,
-    output: OutputStream
+    oldChunk: Chunk, oldFileRAF: RandomAccessFile, output: OutputStream
   ) {
     oldFileRAF.seek(oldChunk.offset.toLong())
     var remainingBytes = oldChunk.length
@@ -50,15 +49,14 @@ open class ChunkMerger(
 
   @Throws(IOException::class)
   open fun downloadChunkFromNewData(
-    newChunk: Chunk, newChunkDataSource: Iterator<ByteArray>,
-    output: OutputStream
+    newChunk: Chunk, newChunkDataSource: Iterator<ByteArray>, output: OutputStream
   ) {
     if (newChunkDataSource.hasNext()) {
       val chunkData = newChunkDataSource.next()
       if (chunkData.size == newChunk.length) {
         output.write(chunkData)
-      } else throw IllegalArgumentException("Received chunk length has wrong length: " +
+      } else throw IllegalArgumentException("Received chunk has wrong length: " +
         "${chunkData.size} but need ${newChunk.length}")
-    } else throw IllegalArgumentException("New chunks data iterator hasn't got enough chunks")
+    } else throw IllegalArgumentException("New chunks data iterator hasn't got enough chunks.")
   }
 }
