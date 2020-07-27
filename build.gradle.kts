@@ -21,4 +21,3 @@ dependencies {
   implementation(project(":services:plugin-blockmap-patches:blockmap"))
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${rootProject.properties["jacksonVersion"]}")
 }
-

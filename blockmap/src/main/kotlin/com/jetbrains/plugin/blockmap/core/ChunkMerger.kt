@@ -1,8 +1,6 @@
 package com.jetbrains.plugin.blockmap.core
 
 import java.io.*
-import java.lang.IllegalArgumentException
-
 
 open class ChunkMerger(
   private val oldFile: File,
@@ -13,11 +11,13 @@ open class ChunkMerger(
   private val buffer = ByteArray(bufferSize)
 
   /**
-   * Restore new file from old file chunks and new file chunks by
-   * merge old and new chunks.
+   * Restore a new file from old file chunks and new file chunks by
+   * merging old and new chunks.
    * @param output stream where restored file will be written.
    * @param newChunkDataSource source of new chunks where chunks go in the
    * same order as they are in the difference between new and old chunk sets.
+   * For example if a new file consists of chunks: old1, old2, new3, old3, new2, new1 then
+   * newChunkDataSource must consists of chunks data new3, new2, new1 etc (in that order).
    */
   @Throws(IOException::class)
   open fun merge(output: OutputStream, newChunkDataSource: Iterator<ByteArray>) {
@@ -55,8 +55,8 @@ open class ChunkMerger(
       val chunkData = newChunkDataSource.next()
       if (chunkData.size == newChunk.length) {
         output.write(chunkData)
-      } else throw IllegalArgumentException("Received chunk has wrong length: " +
-        "${chunkData.size} but need ${newChunk.length}")
-    } else throw IllegalArgumentException("New chunks data iterator hasn't got enough chunks.")
+      } else throw IOException("Received chunk has wrong length: " +
+        "${chunkData.size} but expected ${newChunk.length}.")
+    } else throw IOException("New chunks data iterator hasn't got enough chunks.")
   }
 }
