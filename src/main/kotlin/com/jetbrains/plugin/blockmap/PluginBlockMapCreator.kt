@@ -2,7 +2,7 @@ package com.jetbrains.plugin.blockmap
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.jetbrains.plugin.blockmap.core.BlockMap
-import com.jetbrains.plugin.blockmap.core.makeFileHash
+import com.jetbrains.plugin.blockmap.core.FileHash
 import com.jetbrains.plugin.blockmap.protocol.PluginBlockMapDescriptorRequest
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -17,7 +17,7 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
     private val mapper = ObjectMapper()
 
     const val BLOCKMAP_FILENAME = "blockmap.json"
-    const val HASH_FILENAME = "hash.txt"
+    const val HASH_FILENAME = "hash.json"
   }
 
   fun createPluginBlockMap(request: PluginBlockMapDescriptorRequest) {
@@ -34,12 +34,12 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
     logger.info("Blockmap file $blockMapFilePath uploaded")
 
     logger.info("Creating plugin hash")
-    val pluginHash = getFileInputStream(bucketName, updateFileKey).use { input -> makeFileHash(input) }
+    val pluginHash = getFileInputStream(bucketName, updateFileKey).use { input -> FileHash(input) }
     logger.info("Plugin hash created")
 
     val pluginHashPath = getNewFilePath(updateFileKey, HASH_FILENAME)
     logger.info("Uploading plugin hash file $pluginHashPath")
-    putStringToBucket(bucketName, pluginHashPath, pluginHash)
+    putStringToBucket(bucketName, pluginHashPath, mapper.writeValueAsString(pluginHash))
     logger.info("Plugin hash file $pluginHashPath uploaded")
   }
 

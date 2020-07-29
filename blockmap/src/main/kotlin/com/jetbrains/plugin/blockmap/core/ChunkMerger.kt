@@ -17,7 +17,7 @@ open class ChunkMerger(
    * @param newChunkDataSource source of new chunks where chunks go in the
    * same order as they are in the difference between new and old chunk sets.
    * For example if a new file consists of chunks: old1, old2, new3, old3, new2, new1 then
-   * newChunkDataSource must consists of chunks data new3, new2, new1 etc (in that order).
+   * [newChunkDataSource] must consists of chunks data new3, new2, new1 etc (in that order).
    */
   @Throws(IOException::class)
   open fun merge(output: OutputStream, newChunkDataSource: Iterator<ByteArray>) {
