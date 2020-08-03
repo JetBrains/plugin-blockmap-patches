@@ -8,7 +8,10 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
+import java.io.ByteArrayOutputStream
 import java.io.InputStream
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 
 class PluginBlockMapCreator(private val s3Client: S3Client) {
@@ -17,6 +20,7 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
     private val mapper = ObjectMapper()
 
     const val BLOCKMAP_FILENAME = "blockmap.json"
+    const val BLOCKMAP_ZIP = "blockmap.zip"
     const val HASH_FILENAME = "hash.json"
   }
 
@@ -28,9 +32,10 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
     val blockMap = getFileInputStream(bucketName, updateFileKey).use { input -> BlockMap(input) }
     logger.info("Blockmap created")
 
-    val blockMapFilePath = getNewFilePath(updateFileKey, BLOCKMAP_FILENAME)
+    val blockMapFilePath = getNewFilePath(updateFileKey, BLOCKMAP_ZIP)
     logger.info("Uploading blockmap file $blockMapFilePath")
-    putStringToBucket(bucketName, blockMapFilePath, mapper.writeValueAsString(blockMap))
+    val zipBytes = createBlockMapZipBytes(mapper.writeValueAsBytes(blockMap))
+    putBytesToBucket(bucketName, blockMapFilePath, zipBytes)
     logger.info("Blockmap file $blockMapFilePath uploaded")
 
     logger.info("Creating plugin hash")
@@ -49,6 +54,26 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
         .bucket(bucketName)
         .key(filePath)
     }, RequestBody.fromString(data))
+  }
+
+  private fun putBytesToBucket(bucketName: String, filePath: String, data: ByteArray) {
+    s3Client.putObject({ putObjectRequest ->
+      putObjectRequest
+        .bucket(bucketName)
+        .key(filePath)
+    }, RequestBody.fromBytes(data))
+  }
+
+  private fun createBlockMapZipBytes(bytes: ByteArray): ByteArray {
+    ByteArrayOutputStream().use { buffer ->
+      ZipOutputStream(buffer).use { output ->
+        val entry = ZipEntry(BLOCKMAP_FILENAME)
+        output.putNextEntry(entry)
+        output.write(bytes)
+        output.closeEntry()
+      }
+      return buffer.toByteArray()
+    }
   }
 
   private fun getFileInputStream(bucketName: String, filePath: String): InputStream {

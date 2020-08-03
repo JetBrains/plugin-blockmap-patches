@@ -7,14 +7,22 @@ import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.test.assertEquals
 
+private const val ALGORITHM = "SHA-256"
+
+private const val MIN_SIZE = 2 * 1024
+
+private const val MAX_SIZE = 64 * 1024
+
+private const val NORMAL_SIZE = 8 * 1024
+
 class BlockMapTest {
   private val file1 = generateTestData(seed = 567812)
   private val file2 = generateTestData(seed = 1223)
   private val file3 = generateTestData(seed = 98224)
   private val testFile1 = concatenateFiles(file1, file3)
   private val testFile2 = concatenateFiles(file1, file2, file3)
-  private val blockMap1 = BlockMap(testFile1.inputStream())
-  private val blockMap2 = BlockMap(testFile2.inputStream())
+  private val blockMap1 = BlockMap(testFile1.inputStream(), ALGORITHM, MIN_SIZE, MAX_SIZE, NORMAL_SIZE)
+  private val blockMap2 = BlockMap(testFile2.inputStream(), ALGORITHM, MIN_SIZE, MAX_SIZE, NORMAL_SIZE)
   private val mapper = ObjectMapper()
 
   @Test
@@ -82,7 +90,7 @@ class BlockMapTest {
 
   private fun generateTestBlockMap(size: Int = 100000, seed: Long = 35678): BlockMap {
     ByteArrayInputStream(generateTestData(size, seed)).use { input ->
-      return BlockMap(input)
+      return BlockMap(input, ALGORITHM, MIN_SIZE, MAX_SIZE, NORMAL_SIZE)
     }
   }
 

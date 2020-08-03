@@ -17,9 +17,9 @@ import kotlin.math.roundToInt
 class FastCDCImpl(
   source: InputStream,
   private val algorithm: String,
-  private val minSize: Int = 2 * 1024,
-  private val maxSize: Int = 64 * 1024,
-  private val normalSize: Int = 8 * 1024
+  private val minSize: Int,
+  private val maxSize: Int,
+  private val normalSize: Int
 ) : Iterator<Chunk> {
   private val maskS: Int = mask(logarithm2(normalSize) + 1)
   private val maskL: Int = mask(logarithm2(normalSize) - 1)
