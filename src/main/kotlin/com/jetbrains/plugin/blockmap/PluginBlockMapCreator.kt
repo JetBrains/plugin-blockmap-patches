@@ -20,8 +20,8 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
     private val mapper = ObjectMapper()
 
     const val BLOCKMAP_FILENAME = "blockmap.json"
-    const val BLOCKMAP_ZIP = "blockmap.zip"
-    const val HASH_FILENAME = "hash.json"
+    const val BLOCKMAP_ZIP_SUFFIX = "-blockmap.zip"
+    const val HASH_FILENAME_SUFFIX = "-hash.json"
   }
 
   fun createPluginBlockMap(request: PluginBlockMapDescriptorRequest) {
@@ -32,7 +32,7 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
     val blockMap = getFileInputStream(bucketName, updateFileKey).use { input -> BlockMap(input) }
     logger.info("Blockmap created")
 
-    val blockMapFilePath = getNewFilePath(updateFileKey, BLOCKMAP_ZIP)
+    val blockMapFilePath = getNewFilePath(updateFileKey, BLOCKMAP_ZIP_SUFFIX)
     logger.info("Uploading blockmap file $blockMapFilePath")
     val zipBytes = createBlockMapZipBytes(mapper.writeValueAsBytes(blockMap))
     putBytesToBucket(bucketName, blockMapFilePath, zipBytes)
@@ -42,7 +42,7 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
     val pluginHash = getFileInputStream(bucketName, updateFileKey).use { input -> FileHash(input) }
     logger.info("Plugin hash created")
 
-    val pluginHashPath = getNewFilePath(updateFileKey, HASH_FILENAME)
+    val pluginHashPath = getNewFilePath(updateFileKey, HASH_FILENAME_SUFFIX)
     logger.info("Uploading plugin hash file $pluginHashPath")
     putStringToBucket(bucketName, pluginHashPath, mapper.writeValueAsString(pluginHash))
     logger.info("Plugin hash file $pluginHashPath uploaded")
@@ -84,8 +84,9 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
     }
   }
 
-  private fun getNewFilePath(oldFilePath: String, newFileName: String): String {
-    return oldFilePath.replaceAfterLast("/", newFileName, newFileName)
+  private fun getNewFilePath(oldFilePath: String, newFileSuffix: String): String {
+    val suffix = if(oldFilePath.endsWith(".zip")) ".zip" else ".jar"
+    return oldFilePath.replace(suffix, newFileSuffix)
   }
 
   private fun getKeyFromPath(bucketPrefix: String, filePath: String): String {

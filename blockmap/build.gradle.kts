@@ -5,7 +5,7 @@ plugins {
 
 group = "org.jetbrains.intellij"
 val buildNumber = System.getenv("BUILD_NUMBER") ?: "SNAPSHOT"
-version = "2.0.$buildNumber"
+version = "1.0.$buildNumber"
 
 
 publishing {
