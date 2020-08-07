@@ -24,7 +24,7 @@ if (hasProperty("bintrayUser")) {
     setPublications("blockmap-maven")
     pkg.apply {
       userOrg = "jetbrains"
-      repo = "intellij-plugin-service"
+      repo = "intellij-third-party-dependencies"
       name = "blockmap-library"
       setLicenses("Apache-2.0")
       vcsUrl = "git"
