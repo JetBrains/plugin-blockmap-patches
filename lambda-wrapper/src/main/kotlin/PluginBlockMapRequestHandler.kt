@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.jetbrains.plugin.blockmap.PluginBlockMapCreator
 import com.jetbrains.plugin.blockmap.protocol.PluginBlockMapDescriptorRequest
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.regions.Region
@@ -27,6 +29,7 @@ class PluginBlockMapRequestHandler : RequestStreamHandler {
     private val pluginBlockMapCreator = PluginBlockMapCreator(s3Client)
   }
 
+  private val log: Logger = LoggerFactory.getLogger(PluginBlockMapRequestHandler::class.java)
 
   override fun handleRequest(inputStream: InputStream, outputStream: OutputStream, context: Context) {
     val request = objectMapper.readValue(inputStream, PluginBlockMapDescriptorRequest::class.java)
