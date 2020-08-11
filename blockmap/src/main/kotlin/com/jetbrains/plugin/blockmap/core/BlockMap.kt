@@ -4,7 +4,7 @@ import java.io.*
 
 internal const val ALGORITHM = "SHA-256"
 
-private const val NORMAL_SIZE = 2 * 1024
+private const val NORMAL_SIZE = 8 * 1024
 
 private const val MIN_SIZE = NORMAL_SIZE / 4
 
