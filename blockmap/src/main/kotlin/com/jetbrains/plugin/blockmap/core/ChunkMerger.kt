@@ -4,7 +4,7 @@ import java.io.*
 
 open class ChunkMerger(
   private val oldFile: File,
-  private val oldBlockMap: BlockMap = BlockMap(oldFile.inputStream()),
+  private val oldBlockMap: BlockMap,
   private val newBlockMap: BlockMap,
   private val bufferSize: Int = 64 * 1024
 ) {
