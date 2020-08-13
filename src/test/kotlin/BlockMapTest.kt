@@ -1,7 +1,7 @@
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.jetbrains.plugin.blockmap.core.BlockMap
 import com.jetbrains.plugin.blockmap.core.Chunk
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.*
