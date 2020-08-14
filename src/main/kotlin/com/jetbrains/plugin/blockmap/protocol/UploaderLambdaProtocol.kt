@@ -5,5 +5,3 @@ class PluginBlockMapDescriptorRequest {
   lateinit var bucketPrefix: String
   lateinit var key: String
 }
-
-
