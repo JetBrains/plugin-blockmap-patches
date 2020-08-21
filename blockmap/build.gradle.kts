@@ -7,6 +7,9 @@ group = "org.jetbrains.intellij"
 val buildNumber = System.getenv("BUILD_NUMBER") ?: "SNAPSHOT"
 version = "1.0.$buildNumber"
 
+java {
+  withSourcesJar()
+}
 
 publishing {
   publications {
