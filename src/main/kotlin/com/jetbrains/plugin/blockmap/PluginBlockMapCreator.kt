@@ -85,8 +85,9 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
   }
 
   private fun getNewFilePath(oldFilePath: String, newFileSuffix: String): String {
-    val suffix = if(oldFilePath.endsWith(".zip")) ".zip" else ".jar"
-    return oldFilePath.replace(suffix, newFileSuffix)
+    val lastIndex = oldFilePath.lastIndexOf('.')
+    val path = oldFilePath.substring(0, if(lastIndex != -1) lastIndex else 0)
+    return "$path$newFileSuffix"
   }
 
   private fun getKeyFromPath(bucketPrefix: String, filePath: String): String {
