@@ -20,8 +20,8 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
     private val mapper = ObjectMapper()
 
     const val BLOCKMAP_FILENAME = "blockmap.json"
-    const val BLOCKMAP_ZIP_SUFFIX = "-blockmap.zip"
-    const val HASH_FILENAME_SUFFIX = "-hash.json"
+    const val BLOCKMAP_ZIP_SUFFIX = ".blockmap.zip"
+    const val HASH_FILENAME_SUFFIX = ".hash.json"
   }
 
   fun createPluginBlockMap(request: PluginBlockMapDescriptorRequest) {
@@ -85,9 +85,7 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
   }
 
   private fun getNewFilePath(oldFilePath: String, newFileSuffix: String): String {
-    val lastIndex = oldFilePath.lastIndexOf('.')
-    val path = oldFilePath.substring(0, if(lastIndex != -1) lastIndex else 0)
-    return "$path$newFileSuffix"
+    return "$oldFilePath$newFileSuffix"
   }
 
   private fun getKeyFromPath(bucketPrefix: String, filePath: String): String {
