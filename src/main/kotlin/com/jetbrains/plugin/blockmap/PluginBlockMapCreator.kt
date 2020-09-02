@@ -28,24 +28,28 @@ class PluginBlockMapCreator(private val s3Client: S3Client) {
     val updateFileKey = getKeyFromPath(request.bucketPrefix, request.key)
     val bucketName = request.bucketName
 
-    logger.info("Creating blockmap")
-    val blockMap = getFileInputStream(bucketName, updateFileKey).use { input -> BlockMap(input) }
-    logger.info("Blockmap created")
+    try {
+      logger.info("Creating blockmap for '$updateFileKey'")
+      val blockMap = getFileInputStream(bucketName, updateFileKey).use { input -> BlockMap(input) }
+      logger.info("Blockmap created")
 
-    val blockMapFilePath = getNewFilePath(updateFileKey, BLOCKMAP_ZIP_SUFFIX)
-    logger.info("Uploading blockmap file $blockMapFilePath")
-    val zipBytes = createBlockMapZipBytes(mapper.writeValueAsBytes(blockMap))
-    putBytesToBucket(bucketName, blockMapFilePath, zipBytes)
-    logger.info("Blockmap file $blockMapFilePath uploaded")
+      val blockMapFilePath = getNewFilePath(updateFileKey, BLOCKMAP_ZIP_SUFFIX)
+      logger.info("Uploading blockmap file $blockMapFilePath")
+      val zipBytes = createBlockMapZipBytes(mapper.writeValueAsBytes(blockMap))
+      putBytesToBucket(bucketName, blockMapFilePath, zipBytes)
+      logger.info("Blockmap file $blockMapFilePath uploaded")
 
-    logger.info("Creating plugin hash")
-    val pluginHash = getFileInputStream(bucketName, updateFileKey).use { input -> FileHash(input) }
-    logger.info("Plugin hash created")
+      logger.info("Creating plugin hash")
+      val pluginHash = getFileInputStream(bucketName, updateFileKey).use { input -> FileHash(input) }
+      logger.info("Plugin hash created")
 
-    val pluginHashPath = getNewFilePath(updateFileKey, HASH_FILENAME_SUFFIX)
-    logger.info("Uploading plugin hash file $pluginHashPath")
-    putStringToBucket(bucketName, pluginHashPath, mapper.writeValueAsString(pluginHash))
-    logger.info("Plugin hash file $pluginHashPath uploaded")
+      val pluginHashPath = getNewFilePath(updateFileKey, HASH_FILENAME_SUFFIX)
+      logger.info("Uploading plugin hash file $pluginHashPath")
+      putStringToBucket(bucketName, pluginHashPath, mapper.writeValueAsString(pluginHash))
+      logger.info("Plugin hash file $pluginHashPath uploaded")
+    } catch (e: Exception) {
+      logger.error("Could not create blockmap for '$updateFileKey'")
+    }
   }
 
   private fun putStringToBucket(bucketName: String, filePath: String, data: String) {
