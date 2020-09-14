@@ -20,6 +20,11 @@ publishing {
 }
 
 if (hasProperty("bintrayUser")) {
+  publishTo("intellij-plugin-service")
+  publishTo("intellij-third-party-dependencies")
+}
+
+fun publishTo(repository: String){
   bintray {
     user = project.findProperty("bintrayUser").toString()
     key = project.findProperty("bintrayApiKey").toString()
@@ -27,7 +32,7 @@ if (hasProperty("bintrayUser")) {
     setPublications("blockmap-maven")
     pkg.apply {
       userOrg = "jetbrains"
-      repo = "intellij-third-party-dependencies"
+      repo = repository
       name = "blockmap-library"
       setLicenses("Apache-2.0")
       vcsUrl = "git"
