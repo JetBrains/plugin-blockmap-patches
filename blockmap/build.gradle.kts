@@ -1,6 +1,6 @@
 plugins {
   `maven-publish`
-  id("com.jfrog.bintray")
+  id("com.jfrog.bintray") version "1.8.5"
 }
 
 group = "org.jetbrains.intellij"
