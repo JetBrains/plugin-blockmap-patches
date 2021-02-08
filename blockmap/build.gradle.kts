@@ -4,7 +4,11 @@ plugins {
 }
 
 group = "org.jetbrains.intellij"
-val buildNumber = System.getenv("BUILD_NUMBER") ?: "SNAPSHOT"
+val buildNumber = if (hasProperty("bintrayUser")) {
+   System.getenv("BUILD_NUMBER") ?: "SNAPSHOT"
+} else {
+  "SNAPSHOT"
+}
 version = "1.0.$buildNumber"
 
 java {
