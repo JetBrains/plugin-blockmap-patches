@@ -12,6 +12,8 @@ val buildNumber = if (hasProperty("bintrayUser")) {
 version = "1.0.$buildNumber"
 
 java {
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
   withSourcesJar()
 }
 
