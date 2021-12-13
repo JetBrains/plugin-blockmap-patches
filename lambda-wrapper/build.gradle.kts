@@ -20,13 +20,7 @@ dependencies {
   implementation("software.amazon.awssdk:url-connection-client:2.10.78")
   implementation(project(":services:plugin-blockmap-patches"))
   runtimeOnly("org.apache.logging.log4j:log4j-slf4j18-impl:2.15.0")
-  runtimeOnly("com.amazonaws:aws-lambda-java-log4j2:1.2.0") {
-    dependencies {
-      runtimeOnly("org.apache.logging.log4j:log4j-core:2.15.0") {
-        because("we need 2.15.0")
-      }
-    }
-  }
+  runtimeOnly("com.amazonaws:aws-lambda-java-log4j2:1.3.0")
 
 }
 
