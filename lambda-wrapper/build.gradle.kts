@@ -19,7 +19,7 @@ dependencies {
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${rootProject.properties["jacksonVersion"]}")
   implementation("software.amazon.awssdk:url-connection-client:2.10.78")
   implementation(project(":services:plugin-blockmap-patches"))
-  runtimeOnly("org.apache.logging.log4j:log4j-slf4j18-impl:2.16.0")
+  runtimeOnly("org.apache.logging.log4j:log4j-slf4j18-impl:2.17.0")
   runtimeOnly("com.amazonaws:aws-lambda-java-log4j2:1.3.0")
 
 }
