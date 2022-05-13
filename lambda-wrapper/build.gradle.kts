@@ -20,7 +20,7 @@ dependencies {
   implementation("software.amazon.awssdk:url-connection-client:2.10.78")
   implementation(project(":services:plugin-blockmap-patches"))
   runtimeOnly("org.apache.logging.log4j:log4j-slf4j18-impl:2.17.0")
-  runtimeOnly("com.amazonaws:aws-lambda-java-log4j2:1.3.0")
+  runtimeOnly("com.amazonaws:aws-lambda-java-log4j2:1.5.1")
 
 }
 
@@ -30,7 +30,7 @@ buildDir = File(rootProject.projectDir, "build/plugin-blockmap-lambda")
 tasks.register<Zip>("buildPreviewZip") {
   from(project.tasks["compileKotlin"])
   from(project.tasks["processResources"])
-  archiveName = "plugin-blockmap-patches.zip"
+  archiveFileName.set("plugin-blockmap-patches.zip")
   into("lib") {
     from(configurations.runtimeClasspath)
   }
