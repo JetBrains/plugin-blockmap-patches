@@ -1,5 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+val awsLambdaCoreVersion = rootProject.ext["awsLambdaCoreVersion"]
+
 repositories {
   mavenCentral()
 }
@@ -15,13 +17,12 @@ tasks.withType<KotlinCompile> {
 }
 
 dependencies {
-  implementation("com.amazonaws:aws-lambda-java-core:1.2.1")
+  implementation("com.amazonaws:aws-lambda-java-core:$awsLambdaCoreVersion")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${rootProject.properties["jacksonVersion"]}")
   implementation("software.amazon.awssdk:url-connection-client:2.10.78")
   implementation(project(":services:plugin-blockmap-patches"))
   runtimeOnly("org.apache.logging.log4j:log4j-slf4j18-impl:2.17.0")
   runtimeOnly("com.amazonaws:aws-lambda-java-log4j2:1.5.1")
-
 }
 
 
