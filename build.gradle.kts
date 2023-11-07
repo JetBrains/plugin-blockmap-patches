@@ -29,5 +29,5 @@ dependencies {
   testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
   testImplementation(project(":services:plugin-blockmap-patches"))
   implementation(project(":services:plugin-blockmap-patches:blockmap"))
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${rootProject.properties["jacksonVersion"]}")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${rootProject.ext["jacksonVersion"]}")
 }
