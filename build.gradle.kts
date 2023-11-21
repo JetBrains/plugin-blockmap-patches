@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 repositories {
@@ -16,6 +17,10 @@ tasks.withType<KotlinCompile> {
 
 tasks.test {
   useJUnitPlatform()
+  testLogging {
+    showStandardStreams = true
+    exceptionFormat = TestExceptionFormat.FULL
+  }
 }
 
 dependencies {
@@ -26,7 +31,7 @@ dependencies {
       }
     }
   }
-  testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
+  testImplementation("junit:junit:${rootProject.ext["junitVersion"]}")
   testImplementation(project(":services:plugin-blockmap-patches"))
   implementation(project(":services:plugin-blockmap-patches:blockmap"))
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${rootProject.ext["jacksonVersion"]}")
