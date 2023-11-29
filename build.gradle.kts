@@ -31,8 +31,8 @@ dependencies {
       }
     }
   }
-  testImplementation("junit:junit:${rootProject.ext["junitVersion"]}")
+  testImplementation(libs.junit)
   testImplementation(project(":services:plugin-blockmap-patches"))
   implementation(project(":services:plugin-blockmap-patches:blockmap"))
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${rootProject.ext["jacksonVersion"]}")
+  implementation(libs.jackson.datatypeJsr310)
 }
