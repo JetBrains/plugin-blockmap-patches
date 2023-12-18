@@ -7,7 +7,7 @@ repositories {
 }
 
 plugins {
-  kotlin("jvm")
+  alias(builds.plugins.kotlin.jvm)
 }
 
 tasks.withType<KotlinCompile> {
