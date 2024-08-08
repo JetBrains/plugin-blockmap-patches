@@ -16,15 +16,15 @@ tasks.withType<KotlinCompile> {
 
 dependencies {
   implementation(libs.aws.lambda.core)
+  implementation(libs.aws.sdk.url.connection)
   implementation(libs.jackson.datatypeJsr310)
-  implementation("software.amazon.awssdk:url-connection-client:2.10.78")
   implementation(project(":services:plugin-blockmap-patches"))
-  runtimeOnly("org.apache.logging.log4j:log4j-slf4j18-impl:2.17.0")
-  runtimeOnly("com.amazonaws:aws-lambda-java-log4j2:1.5.1")
+  runtimeOnly(libs.log4j.slf4j18)
+  runtimeOnly(libs.aws.lambda.log4j2)
 }
 
 
-buildDir = File(rootProject.projectDir, "build/plugin-blockmap-lambda")
+project.layout.buildDirectory.set(File(rootProject.projectDir, "build/plugin-blockmap-lambda"))
 
 tasks.register<Zip>("buildPreviewZip") {
   from(project.tasks["compileKotlin"])

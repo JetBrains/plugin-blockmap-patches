@@ -24,13 +24,7 @@ tasks.test {
 }
 
 dependencies {
-  api("software.amazon.awssdk:s3:2.10.78") {
-    dependencies {
-      implementation("commons-codec:commons-codec:1.16.0") {
-        because("there is a vulnerability in 1.11")
-      }
-    }
-  }
+  api(libs.aws.sdk.s3)
   testImplementation(libs.junit)
   testImplementation(project(":services:plugin-blockmap-patches"))
   implementation(project(":services:plugin-blockmap-patches:blockmap"))
