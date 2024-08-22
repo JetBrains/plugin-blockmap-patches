@@ -25,8 +25,9 @@ tasks.test {
 
 dependencies {
   api(libs.aws.sdk.s3)
-  testImplementation(libs.junit)
-  testImplementation(project(":services:plugin-blockmap-patches"))
   implementation(project(":services:plugin-blockmap-patches:blockmap"))
   implementation(libs.jackson.datatypeJsr310)
+
+  testImplementation(project(":services:plugin-blockmap-patches"))
+  testImplementation ("org.jetbrains.kotlin:kotlin-test")
 }
