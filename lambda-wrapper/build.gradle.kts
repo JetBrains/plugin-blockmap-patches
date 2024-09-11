@@ -8,10 +8,14 @@ plugins {
   alias(builds.plugins.kotlin.jvm)
 }
 
+val jdkVersion = JavaVersion.VERSION_11
+java {
+  sourceCompatibility = jdkVersion
+  targetCompatibility = jdkVersion
+}
+
 tasks.withType<KotlinCompile> {
-  kotlinOptions {
-    jvmTarget = "11"
-  }
+  kotlinOptions.jvmTarget = jdkVersion.toString()
 }
 
 dependencies {

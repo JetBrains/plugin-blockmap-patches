@@ -1,6 +1,8 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
   `maven-publish`
-  `signing`
+  signing
 }
 
 group = "org.jetbrains.intellij"
@@ -11,11 +13,16 @@ val buildNumber = if (hasProperty("mavenCentralUsername")) {
 }
 version = "1.0.$buildNumber"
 
+val jdkVersion = JavaVersion.VERSION_11
 java {
-  sourceCompatibility = JavaVersion.VERSION_11
-  targetCompatibility = JavaVersion.VERSION_11
+  sourceCompatibility = jdkVersion
+  targetCompatibility = jdkVersion
   withSourcesJar()
   withJavadocJar()
+}
+
+tasks.withType<KotlinCompile> {
+  kotlinOptions.jvmTarget = jdkVersion.toString()
 }
 
 publishing {
