@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   `maven-publish`
@@ -13,16 +13,19 @@ val buildNumber = if (hasProperty("mavenCentralUsername")) {
 }
 version = "1.0.$buildNumber"
 
-val jdkVersion = JavaVersion.VERSION_11
+val javaVersion = "11"
 java {
+  val jdkVersion = JavaVersion.toVersion(javaVersion)
   sourceCompatibility = jdkVersion
   targetCompatibility = jdkVersion
   withSourcesJar()
   withJavadocJar()
 }
 
-tasks.withType<KotlinCompile> {
-  kotlinOptions.jvmTarget = jdkVersion.toString()
+kotlin {
+  compilerOptions {
+    jvmTarget.set(JvmTarget.fromTarget(javaVersion))
+  }
 }
 
 publishing {

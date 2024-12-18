@@ -1,5 +1,5 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 repositories {
   mavenCentral()
@@ -9,14 +9,17 @@ plugins {
   alias(builds.plugins.kotlin.jvm)
 }
 
-val jdkVersion = JavaVersion.VERSION_11
+val javaVersion = "11"
 java {
+  val jdkVersion = JavaVersion.toVersion(javaVersion)
   sourceCompatibility = jdkVersion
   targetCompatibility = jdkVersion
 }
 
-tasks.withType<KotlinCompile> {
-  kotlinOptions.jvmTarget = jdkVersion.toString()
+kotlin {
+  compilerOptions {
+    jvmTarget.set(JvmTarget.fromTarget(javaVersion))
+  }
 }
 
 tasks.test {
