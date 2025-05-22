@@ -34,7 +34,7 @@ dependencies {
   api(libs.aws.sdk.s3)
   implementation(project(":services:plugin-blockmap-patches:blockmap"))
   implementation(libs.jackson.datatypeJsr310)
-  implementation(libs.bundles.logback)
+  implementation(libsConstraints.bundles.log4j)
 
   testImplementation(project(":services:plugin-blockmap-patches"))
   testImplementation ("org.jetbrains.kotlin:kotlin-test")
